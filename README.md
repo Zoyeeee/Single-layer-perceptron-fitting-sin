@@ -5,7 +5,7 @@ clear all;clc
 rng('default');
 %%
 %训练集
-x_Test=[0:0.00001:(2*3.14)];
+x_Test=[0:0.001:(2*3.14)];
 IDtest=randperm(length(x_Test));
 x_Test=x_Test(IDtest);
 
@@ -31,11 +31,11 @@ hold on
 %%
 %设定参数部分（调参全部在这边调）
 %神经元细胞数目设定
-num_cell=10;
+num_cell=20;
 %误差多少的时候停止(可不填)
 Tolerance=0.0001;
 %学习率
-alpha=0.01;
+alpha=0.5;
 %%
 %bp神经网络部分
 %%
@@ -50,28 +50,31 @@ b2=randn(1,num_cell);
 bar = waitbar(0,'读取数据中...');    % waitbar显示进度条
 %训练模型
 for i=1:length(x_Test)
-    MyFlag=1;
-    counter=0;
-    var_RemberDisdencecriterion=0;
-    RemberDisdence=[99999,999999,9999999];
-    while(MyFlag)
         tempy1=HindLayer(w1,b1,x_Test(i));
         y=Hind2Out(w2,b2,tempy1);
-        if mod(counter,3)==0
-            RemberDisdence(1)=y;
-        elseif mod(counter,3)==1
-            RemberDisdence(2)=y;
-        elseif mod(counter,3)==2
-            RemberDisdence(3)=y;
-        end
-            
-        if (IfStop(y_Test(i),y,Tolerance)||VarianceCondition(y,RemberDisdence))%||(counter==100000)%暂停条件不止这个，应该再加入差距不再变化,以及计算次数
-            MyFlag=0;
-        else
-            [w1,b1,w2,b2]=UpdateParameter(w1,b1,w2,b2,y_Test(i),tempy1,y,alpha,x_Test(i));
-            counter=counter+1;
-        end
-    end
+        [w1,b1,w2,b2]=UpdateParameter(w1,b1,w2,b2,y_Test(i),tempy1,y,alpha,x_Test(i));
+%     MyFlag=1;
+%     counter=0;
+%     var_RemberDisdencecriterion=0;
+%     RemberDisdence=[99999,999999,9999999];
+%     while(MyFlag)
+%         tempy1=HindLayer(w1,b1,x_Test(i));
+%         y=Hind2Out(w2,b2,tempy1);
+%         if mod(counter,3)==0
+%             RemberDisdence(1)=y;
+%         elseif mod(counter,3)==1
+%             RemberDisdence(2)=y;
+%         elseif mod(counter,3)==2
+%             RemberDisdence(3)=y;
+%         end
+%             
+%         if (IfStop(y_Test(i),y,Tolerance)||VarianceCondition(y,RemberDisdence))%||(counter==100000)%暂停条件不止这个，应该再加入差距不再变化,以及计算次数
+%             MyFlag=0;
+%         else
+%             [w1,b1,w2,b2]=UpdateParameter(w1,b1,w2,b2,y_Test(i),tempy1,y,alpha,x_Test(i));
+%             counter=counter+1;
+%         end
+%     end
     str=['计算中...',num2str(100*i/length(x_Test)),'%'];    % 百分比形式显示处理进程,不需要删掉这行代码就行
     waitbar(i/length(x_Test),bar,str)                       % 更新进度条bar，配合bar使用
 end
